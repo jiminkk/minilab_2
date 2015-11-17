@@ -39,7 +39,6 @@ start(void)
 		sys_yield();
 	}
 
-	// Yield forever.
-	while (1)
-		sys_yield();
+	// exit instead of yielding forever
+	sys_exit(0);
 }
