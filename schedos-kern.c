@@ -231,7 +231,7 @@ schedule(void)
 		}
 	else if (scheduling_algorithm == 1)
 	{
-		int i;
+		pid_t i;
 		while(1) {
 			for(i=1; i<NPROCS; ++i){
 				if(proc_array[i].p_state == P_RUNNABLE)
