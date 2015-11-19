@@ -16,7 +16,10 @@ The name of the scheduling algorithm is: Round Robin
 Response to Exercise 3:
 
 Average turnaround time for scheduling_algorithm 0:
-Process 1: 
+Turnaround time can be calculated with the following formula:
+	burstTime + waitingTime
+Process 1:   + 0 = 1277
+Process 2: (1280 - 2) - 1 = 
 
 Average turnaround time for scheduling_algorithm 1:
 Process 1: 320 ms
