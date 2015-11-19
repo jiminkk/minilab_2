@@ -13,6 +13,17 @@
 // The number of times each application should run
 #define RUNCOUNT	320
 
+static inline void
+sys_priority(unsigned int priority)
+{
+	// We call a system call by causing an interrupt with the 'int'
+	// instruction.  In weensyos, the type of system call is indicated
+	// by the interrupt number -- here, INT_SYS_YIELD.
+	asm volatile("int %0\n"
+		     : : "i" (INT_SET_PRIORITY)
+			"a" (priority)
+		     : "cc", "memory");
+}
 
 /*****************************************************************************
  * sys_yield

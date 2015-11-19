@@ -158,6 +158,10 @@ interrupt(registers_t *reg)
 	current->p_registers = *reg;
 
 	switch (reg->reg_intno) {
+	
+	case INT_SET_PRIORITY:
+		current->p_priority = reg->reg_eax;
+		run(current);
 
 	case INT_SYS_YIELD:
 		// The 'sys_yield' system call asks the kernel to schedule
@@ -231,8 +235,8 @@ schedule(void)
 		}
 	else if (scheduling_algorithm == 1)
 	{
-		pid_t i;
 		while(1) {
+			pid_t i;
 			for(i=1; i<NPROCS; ++i){
 				if(proc_array[i].p_state == P_RUNNABLE)
 					run(&proc_array[i]);
@@ -241,7 +245,12 @@ schedule(void)
 	}
 	else if (scheduling_algorithm == 2)
 	{
-		// do something
+		while(1) {
+			pid_t i;
+			for(i=1; i<NPROCS; ++i){
+				if() // to do!!!
+			}
+		}
 	}
 	else if (scheduling_algorithm == 3)
 	{
