@@ -18,8 +18,11 @@ Response to Exercise 3:
 Average turnaround time for scheduling_algorithm 0:
 Turnaround time can be calculated with the following formula:
 	burstTime + waitingTime
-Process 1:   + 0 = 1277
-Process 2: (1280 - 2) - 1 = 
+Process 1: (320*4) - 3 = 1277 ms
+Process 2: (320*4) - 2 = 1278 ms
+Process 3: (320*4) - 1 = 1279 ms
+Process 4: (320*4) - 0 = 1280 ms
+Average: (1277 + 1278 + 1279 + 1280)/4 = 1278.5 ms
 
 Average turnaround time for scheduling_algorithm 1:
 Process 1: 320 ms
