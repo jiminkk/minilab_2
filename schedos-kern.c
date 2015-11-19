@@ -159,7 +159,7 @@ interrupt(registers_t *reg)
 
 	switch (reg->reg_intno) {
 	
-	case INT_SET_PRIORITY:
+	case INT_SYS_SET_PRIORITY:
 		current->p_priority = reg->reg_eax;
 		run(current);
 
@@ -179,12 +179,6 @@ interrupt(registers_t *reg)
 		current->p_state = P_ZOMBIE;
 		current->p_exit_status = reg->reg_eax;
 		schedule();
-
-	case INT_SYS_USER1:
-		// 'sys_user*' are provided for your convenience, in case you
-		// want to add a system call.
-		/* Your code here (if you want). */
-		run(current);
 
 	case INT_SYS_USER2:
 		/* Your code here (if you want). */
@@ -222,6 +216,8 @@ void
 schedule(void)
 {
 	pid_t pid = current->p_pid;
+	unsigned int lowest_val;
+	lowest_val = 0xffffffff; // INTMAX
 
 	if (scheduling_algorithm == 0)
 		while (1) {
@@ -236,10 +232,9 @@ schedule(void)
 	else if (scheduling_algorithm == 1)
 	{
 		while(1) {
-			pid_t i;
-			for(i=1; i<NPROCS; ++i){
-				if(proc_array[i].p_state == P_RUNNABLE)
-					run(&proc_array[i]);
+			for(pid=1; pid<=NPROCS; ++pid){
+				if(proc_array[pid].p_state == P_RUNNABLE)
+					run(&proc_array[pid]);
 			}
 		}
 	}
@@ -247,8 +242,17 @@ schedule(void)
 	{
 		while(1) {
 			pid_t i;
-			for(i=1; i<NPROCS; ++i){
-				if() // to do!!!
+			for(i=1; i<=NPROCS; ++i){
+				if(proc_array[i].p_state == P_RUNNABLE
+					&& proc_array[i].p_priority < lowest_val){
+					lowest_val = proc_array[i].p_priority;
+				}
+			}
+			//alternate if same priority value
+			pid = pid % NPROCS;
+			if(proc_array[pid].p_state == P_RUNNABLE
+				&& proc_array[pid].p_priority <= lowest_val){
+				run(&proc_array[pid]);
 			}
 		}
 	}

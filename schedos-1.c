@@ -33,7 +33,7 @@ start(void)
 {
 	int i;
 	
-	sys_priority(3);	// set priority number here
+	set_priority(3);	// set priority number here
 
 	for (i = 0; i < RUNCOUNT; i++) {
 		// Write characters to the console, yielding after each one.

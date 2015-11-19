@@ -5,44 +5,47 @@ obj/schedos-3:     file format elf32-i386
 Disassembly of section .text:
 
 00400000 <start>:
-// #endif
-
-
-void
-start(void)
+set_priority(unsigned int priority)
 {
-  400000:	31 c0                	xor    %eax,%eax
-	int i;
+	// We call a system call by causing an interrupt with the 'int'
+	// instruction.  In weensyos, the type of system call is indicated
+	// by the interrupt number -- here, INT_SYS_YIELD.
+	asm volatile("int %0\n"
+  400000:	b8 03 00 00 00       	mov    $0x3,%eax
+  400005:	cd 32                	int    $0x32
+  400007:	30 c0                	xor    %al,%al
+	
+	set_priority(3);	// set priority number here
 
 	for (i = 0; i < RUNCOUNT; i++) {
 		// Write characters to the console, yielding after each one.
 		*cursorpos++ = PRINTCHAR;
-  400002:	8b 15 00 80 19 00    	mov    0x198000,%edx
-  400008:	66 c7 02 33 09       	movw   $0x933,(%edx)
-  40000d:	83 c2 02             	add    $0x2,%edx
-  400010:	89 15 00 80 19 00    	mov    %edx,0x198000
+  400009:	8b 15 00 80 19 00    	mov    0x198000,%edx
+  40000f:	66 c7 02 33 09       	movw   $0x933,(%edx)
+  400014:	83 c2 02             	add    $0x2,%edx
+  400017:	89 15 00 80 19 00    	mov    %edx,0x198000
 sys_yield(void)
 {
 	// We call a system call by causing an interrupt with the 'int'
 	// instruction.  In weensyos, the type of system call is indicated
 	// by the interrupt number -- here, INT_SYS_YIELD.
 	asm volatile("int %0\n"
-  400016:	cd 30                	int    $0x30
-void
-start(void)
+  40001d:	cd 30                	int    $0x30
 {
 	int i;
+	
+	set_priority(3);	// set priority number here
 
 	for (i = 0; i < RUNCOUNT; i++) {
-  400018:	40                   	inc    %eax
-  400019:	3d 40 01 00 00       	cmp    $0x140,%eax
-  40001e:	75 e2                	jne    400002 <start+0x2>
+  40001f:	40                   	inc    %eax
+  400020:	3d 40 01 00 00       	cmp    $0x140,%eax
+  400025:	75 e2                	jne    400009 <start+0x9>
 	// the kernel can look up that register value to read the argument.
 	// Here, the status is loaded into register %eax.
 	// You can load other registers with similar syntax; specifically:
 	//	"a" = %eax, "b" = %ebx, "c" = %ecx, "d" = %edx,
 	//	"S" = %esi, "D" = %edi.
 	asm volatile("int %0\n"
-  400020:	66 31 c0             	xor    %ax,%ax
-  400023:	cd 31                	int    $0x31
-  400025:	eb fe                	jmp    400025 <start+0x25>
+  400027:	66 31 c0             	xor    %ax,%ax
+  40002a:	cd 31                	int    $0x31
+  40002c:	eb fe                	jmp    40002c <start+0x2c>
