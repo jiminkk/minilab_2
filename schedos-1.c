@@ -18,6 +18,14 @@
 #define PRINTCHAR	('1' | 0x0C00)
 #endif
 
+#ifndef PRIORITY
+#define PRIORITY 6
+#endif
+
+#ifndef SHARE
+#define SHARE 10
+#endif
+
 // UNCOMMENT THE NEXT LINE TO USE EXERCISE 8 CODE INSTEAD OF EXERCISE 6
 // #define __EXERCISE_8__
 // Use the following structure to choose between them:
@@ -33,7 +41,9 @@ start(void)
 {
 	int i;
 	
-	set_priority(3);	// set priority number here
+	set_priority(PRIORITY);	// set priority number here
+	set_share(SHARE);	// set share number
+	sys_yield();
 
 	for (i = 0; i < RUNCOUNT; i++) {
 		// Write characters to the console, yielding after each one.

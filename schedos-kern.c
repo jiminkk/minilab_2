@@ -102,7 +102,10 @@ start(void)
 	for (i = 1; i < NPROCS; i++) {
 		process_t *proc = &proc_array[i];
 		uint32_t stack_ptr = PROC1_START + i * PROC_SIZE;
-
+		
+		proc->p_priority = 0;
+		proc->p_share = 1;
+		proc->p_num = 0;
 		// Initialize the process descriptor
 		special_registers_init(proc);
 
@@ -127,7 +130,7 @@ start(void)
 	//   41 = p_priority algorithm (exercise 4.a)
 	//   42 = p_share algorithm (exercise 4.b)
 	//    7 = any algorithm that you may implement for exercise 7
-	scheduling_algorithm = 0;
+	scheduling_algorithm = 3;
 
 	// Switch to the first process.
 	run(&proc_array[1]);
@@ -180,8 +183,9 @@ interrupt(registers_t *reg)
 		current->p_exit_status = reg->reg_eax;
 		schedule();
 
-	case INT_SYS_USER2:
-		/* Your code here (if you want). */
+	case INT_SYS_SET_SHARE:
+		/* Set register for p_share */
+		current->p_share = reg->reg_eax;
 		run(current);
 
 	case INT_CLOCK:
@@ -242,6 +246,7 @@ schedule(void)
 	{
 		while(1) {
 			pid_t i;
+			//find process with highest priority = lowest value
 			for(i=1; i<=NPROCS; ++i){
 				if(proc_array[i].p_state == P_RUNNABLE
 					&& proc_array[i].p_priority < lowest_val){
@@ -249,7 +254,8 @@ schedule(void)
 				}
 			}
 			//alternate if same priority value
-			pid = pid % NPROCS;
+			pid = (pid+1) % NPROCS;
+			//run highest priority process
 			if(proc_array[pid].p_state == P_RUNNABLE
 				&& proc_array[pid].p_priority <= lowest_val){
 				run(&proc_array[pid]);
@@ -257,8 +263,30 @@ schedule(void)
 		}
 	}
 	else if (scheduling_algorithm == 3)
-	{
-		// do something here too
+	{/*
+		// proportional-share scheduling
+		while(1){
+			//
+			if(proc_array[pid].p_state == P_RUNNABLE){
+				while(proc_array[pid].p_share > 0){
+					proc_array[pid].p_share--;
+					run(&proc_array[pid]);
+				}
+			}
+			pid = (pid+1) % NPROCS;
+		}*/
+		while(1){
+			if(proc_array[pid].p_state == P_RUNNABLE){
+				if(proc_array[pid].p_num >= proc_array[pid].p_share){
+					proc_array[pid].p_num = 0;
+				}
+				else{
+					proc_array[pid].p_num++;		
+					run(&proc_array[pid]);
+				}
+			}
+			pid = (pid+1) % NPROCS;
+		}
 	}
 	// If we get here, we are running an unknown scheduling algorithm.
 	cursorpos = console_printf(cursorpos, 0x100, "\nUnknown scheduling algorithm %d\n", scheduling_algorithm);
