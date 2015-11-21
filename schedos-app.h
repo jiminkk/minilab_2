@@ -38,6 +38,19 @@ set_share(unsigned int share)
 }
 
 
+static inline void
+sys_print(unsigned int character)
+{
+	// We call a system call by causing an interrupt with the 'int'
+	// instruction.  In weensyos, the type of system call is indicated
+	// by the interrupt number -- here, INT_SYS_SET_SHARE.
+	asm volatile("int %0\n"
+		     : : "i" (INT_SYS_PRINT),
+			"a" (character)
+		     : "cc", "memory");
+}
+
+
 /*****************************************************************************
  * sys_yield
  *

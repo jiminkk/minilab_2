@@ -1,6 +1,7 @@
 #include "schedos-kern.h"
 #include "x86.h"
 #include "lib.h"
+#include "schedos-app.h"
 
 /*****************************************************************************
  * schedos-kern
@@ -88,7 +89,7 @@ start(void)
 
 	// Set up hardware (schedos-x86.c)
 	segments_init();
-	interrupt_controller_init(0);
+	interrupt_controller_init(1);
 	console_clear();
 
 	// Initialize process descriptors as empty
@@ -130,7 +131,7 @@ start(void)
 	//   41 = p_priority algorithm (exercise 4.a)
 	//   42 = p_share algorithm (exercise 4.b)
 	//    7 = any algorithm that you may implement for exercise 7
-	scheduling_algorithm = 3;
+	scheduling_algorithm = 0;
 
 	// Switch to the first process.
 	run(&proc_array[1]);
@@ -188,6 +189,10 @@ interrupt(registers_t *reg)
 		current->p_share = reg->reg_eax;
 		run(current);
 
+	case INT_SYS_PRINT:
+		*cursorpos++ = reg->reg_eax;
+		run(current);
+
 	case INT_CLOCK:
 		// A clock interrupt occurred (so an application exhausted its
 		// time quantum).
@@ -223,7 +228,7 @@ schedule(void)
 	unsigned int lowest_val;
 	lowest_val = 0xffffffff; // INTMAX
 
-	if (scheduling_algorithm == 0)
+	if (scheduling_algorithm == __EXERCISE_1__)
 		while (1) {
 			pid = (pid + 1) % NPROCS;
 
@@ -233,7 +238,7 @@ schedule(void)
 			if (proc_array[pid].p_state == P_RUNNABLE)
 				run(&proc_array[pid]);
 		}
-	else if (scheduling_algorithm == 1)
+	else if (scheduling_algorithm == __EXERCISE_2__)
 	{
 		while(1) {
 			for(pid=1; pid<=NPROCS; ++pid){
@@ -242,7 +247,7 @@ schedule(void)
 			}
 		}
 	}
-	else if (scheduling_algorithm == 2)
+	else if (scheduling_algorithm == __EXERCISE_4A__)
 	{
 		while(1) {
 			pid_t i;
@@ -262,7 +267,7 @@ schedule(void)
 			}
 		}
 	}
-	else if (scheduling_algorithm == 3)
+	else if (scheduling_algorithm == __EXERCISE_4B__)
 	{/*
 		// proportional-share scheduling
 		while(1){

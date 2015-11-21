@@ -48,10 +48,10 @@ Average: (0 + 320 + 640 + 960)/4 = 480 ms
 Exercise 4:
 
 Did you complete Exercise 4A, Exercise 4B, or both for extra credit?
-
+I have completed both 4A and 4B for extra credit.
 
 Exercise 5:
-
+In the first row of the Bochs, we can see that during the execution of process 4, the first known timer interrupt occurs. By the time the timer expired, all four round robin cycles were able to print, but in the fifth cycle, process 4 was not able to print its character 4.
 
 (Exercise 6 is a coding exercise)
 
