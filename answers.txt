@@ -61,3 +61,5 @@ Anything else you'd like us to know:
 
 
 Extra credit exercises:
+
+Exercise 8: Uncomment #define __EXERCISE_8__ in order to run the lock implementation as a synchronization mechanism.
