@@ -46,6 +46,17 @@ static process_t proc_array[NPROCS];
 // A pointer to the currently running process.
 // This is kept up to date by the run() function, in mpos-x86.c.
 process_t *current;
+#define MAX_TICKETS 500
+pid_t lotteryarray[MAX_TICKETS];
+int ticket;
+
+void add_ticket(pid_t pid)
+{
+	if(ticket < MAX_TICKETS){
+		lotteryarray[ticket] = pid;
+		ticket++;
+	}
+}
 
 // The preferred scheduling algorithm.
 int scheduling_algorithm;
@@ -73,6 +84,16 @@ int scheduling_algorithm;
 #define __EXERCISE_4B__ 42  // p_share algorithm (exercise 4.b)
 #define __EXERCISE_7__   7  // any algorithm for exercise 7
 
+/*
+	random method
+*/
+unsigned short lfsr = 0xACE1u;
+unsigned bit;
+unsigned random()
+{
+	bit = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1;
+	return lfsr = (lfsr >> 1) | (bit << 15);
+}
 
 /*****************************************************************************
  * start
@@ -107,6 +128,13 @@ start(void)
 		proc->p_priority = 0;
 		proc->p_share = 1;
 		proc->p_num = 0;
+		
+		add_ticket(1);
+		add_ticket(2);
+		add_ticket(2);
+		add_ticket(2);
+		
+	
 		// Initialize the process descriptor
 		special_registers_init(proc);
 
@@ -131,7 +159,7 @@ start(void)
 	//   41 = p_priority algorithm (exercise 4.a)
 	//   42 = p_share algorithm (exercise 4.b)
 	//    7 = any algorithm that you may implement for exercise 7
-	scheduling_algorithm = 0;
+	scheduling_algorithm = 7;
 
 	// Switch to the first process.
 	run(&proc_array[1]);
@@ -291,6 +319,16 @@ schedule(void)
 				}
 			}
 			pid = (pid+1) % NPROCS;
+		}
+	}
+	else if(scheduling_algorithm == __EXERCISE_7__)
+	{
+		while(1){
+			unsigned index;
+			index = random() % ticket;
+			if(proc_array[lotteryarray[index]].p_state == P_RUNNABLE){
+				run(&proc_array[lotteryarray[index]]);
+			}
 		}
 	}
 	// If we get here, we are running an unknown scheduling algorithm.

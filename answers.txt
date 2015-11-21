@@ -57,9 +57,8 @@ In the first row of the Bochs, we can see that during the execution of process 4
 
 
 Anything else you'd like us to know:
-
-
-
 Extra credit exercises:
+
+Exercise 7: Implemented the lottery scheduling. Built a random number generator function to pick a random number for loterry ticket. Use that ticket to choose a random process to run.
 
 Exercise 8: Uncomment #define __EXERCISE_8__ in order to run the lock implementation as a synchronization mechanism.
